@@ -1,0 +1,135 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Home Page
+{% endblock %}
+
+{% block body %}
+    <div id="login_page" style="height: fit-content;width: 100%;">
+
+
+        <center>
+            <div style="margin-top:10%;margin-bottom: 7%;">
+                <center>
+                    <div>
+                        <h1>
+                            User Login Form
+                        </h1>
+                    </div>
+                </center>
+            </div>
+            <div>
+                <label for=""><i class="fa fa-user"></i> Name:</label>
+                <input id="user_name" type="text" placeholder="User Name" style="margin: 10px;">
+            </div>
+            <div>
+                <label for="">Password  :&nbsp;&nbsp;</label>
+                <input id="user_password" type="text" placeholder="User Password" style="margin: 10px;">
+            </div>
+            <div>
+                <button id="user" style="height: fit-content;width: fit-content;padding: 10px;margin: 10px;" onclick="login()">
+                    Login
+                </button>
+            </div>
+        </center>
+
+    </div>
+
+
+    <div id="page" style="height: fit-content;width: 100%;">
+
+        <center>
+            <h1 style="background-color: white;">
+                User Pannel
+            </h1>
+        </center>
+    
+        <div style="margin-top: 15%;background-color: white;">
+            <center>
+                <h1 id="intro">
+                    
+                </h1>
+            </center>
+        </div>
+    
+    
+    </div>
+
+
+    <script>
+
+        var old_date=localStorage.getItem("run_time_user");
+        var new_date = Date.now();
+        var d=new_date-old_date;
+        if((d/1000) > 30)
+        {
+            document.getElementById("login_page").style.display='block';
+            document.getElementById("page").style.display='none';
+        }
+        else
+        {
+            document.getElementById("login_page").style.display='none';
+            document.getElementById("page").style.display='block';
+        }
+        
+        setInterval(() => {
+            var old_date=localStorage.getItem("run_time_user");
+            var new_date = Date.now();
+            var d=new_date-old_date;
+            if((d/1000) > 30)
+            {
+                document.getElementById("login_page").style.display='block';
+                document.getElementById("page").style.display='none';
+            }
+        }, 1000);
+
+    </script>
+
+    <script>
+
+document.getElementById('intro').innerHTML="Welcome '"+localStorage.getItem('user_name')+"' .Your User Name is '"+localStorage.getItem('user_user_name')+"' and User Password is '"+localStorage.getItem('user_user_password')+"'.";
+
+        function login()
+        {
+            name=document.getElementById("user_name").value
+            pass=document.getElementById("user_password").value
+            Login_FUN(name,pass)
+        }
+
+        async function Login_FUN(name,pass) {
+
+            try
+            {
+                fetch('/user/api?user_name='+name+'&user_password='+pass)
+                .then(response => response.json())
+                .then(data =>{
+                    for (const dt of data.Data)
+                    {
+                        if(dt.user_name == name && dt.user_password == pass)
+                        {
+                            document.getElementById("login_page").style.display='none';
+                            document.getElementById("page").style.display='block';
+                            var d= Date.now();
+                            localStorage.setItem('run_time_user',d)
+                            localStorage.setItem('run_time_user',d);
+                            localStorage.setItem('user_id',dt.id);
+                            localStorage.setItem('user_name',dt.name);
+                            localStorage.setItem('user_user_name',dt.user_name);
+                            localStorage.setItem('user_user_password',dt.user_password);
+                            document.getElementById('intro').innerHTML="Welcome '"+dt.name+"' .Your User Name is '"+dt.user_name+"' and User Password is '"+dt.user_password+"'.";
+                        }
+                    }
+                });
+            }
+            catch(e)
+            {
+                alert(e)
+            }
+
+            }
+    
+    </script>
+
+
+    
+{% endblock %}
